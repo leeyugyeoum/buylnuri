@@ -542,6 +542,9 @@
                     </div>
 
                     <div class="flex flex-wrap items-center gap-2">
+                        <button onclick="lockAdminMode()" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg transition-all shadow-sm">
+                            <i class="fa-solid fa-lock mr-1"></i> 관리자 잠금
+                        </button>
                         <button onclick="seedSampleData()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition-all">
                             <i class="fa-solid fa-database mr-1"></i> 샘플 데이터 생성
                         </button>
@@ -659,6 +662,37 @@
         </div>
     </div>
 
+    <!-- Admin Authentication Modal -->
+    <div id="adminAuthModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 space-y-5 animate-toast">
+            <div class="text-center space-y-2">
+                <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto text-xl shadow-inner">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800">교사 관리자 인증</h3>
+                <p class="text-xs text-slate-500">관리자 전용 비밀번호를 입력해 주세요.</p>
+            </div>
+            
+            <form onsubmit="handleAdminAuthSubmit(event)" class="space-y-4">
+                <div>
+                    <input type="password" id="adminPasswordInput" placeholder="비밀번호 입력" class="w-full px-4 py-3 text-center text-lg tracking-widest rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none font-mono transition-all">
+                    <p id="adminAuthError" class="text-xs text-rose-500 font-medium text-center mt-2 hidden flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-circle-exclamation"></i> 비밀번호가 올바르지 않습니다.
+                    </p>
+                </div>
+                
+                <div class="flex gap-2">
+                    <button type="button" onclick="closeAdminAuthModal()" class="w-1/2 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition-all">
+                        취소
+                    </button>
+                    <button type="submit" class="w-1/2 py-3 bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs rounded-xl transition-all shadow-sm">
+                        인증 확인
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Toast Notification Box -->
     <div id="toast" class="fixed bottom-5 right-5 z-50 hidden">
         <div class="bg-slate-900 text-white px-5 py-3.5 rounded-xl shadow-2xl flex items-center gap-3 border border-slate-700 animate-toast">
@@ -680,7 +714,11 @@
         // Storage Key
         const STORAGE_KEY = 'byulnuri_survey_responses';
 
-        // Initial Sample Data Generator
+        // Security Authentication
+        const ADMIN_PASSWORD = '2824342';
+        let isAdminAuthenticated = false;
+
+        // Sample Data for manual testing if needed
         const INITIAL_SAMPLES = [
             {
                 id: '101',
@@ -719,10 +757,15 @@
 
         // Initialize App
         window.addEventListener('DOMContentLoaded', () => {
-            const data = getStoredResponses();
-            if (data.length === 0) {
-                // Pre-populate initial sample data for better preview experience
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_SAMPLES));
+            // Clean up initial sample data if it was previously auto-loaded
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    if (parsed.length === 3 && parsed[0].id === '101') {
+                        localStorage.removeItem(STORAGE_KEY);
+                    }
+                } catch(e) {}
             }
             updateBadgeCount();
         });
@@ -740,6 +783,11 @@
 
         // Tab Navigation Switcher
         function switchTab(tabId) {
+            if (tabId === 'teacher-admin' && !isAdminAuthenticated) {
+                openAdminAuthModal();
+                return;
+            }
+
             document.getElementById('tab-parent-form').classList.add('hidden');
             document.getElementById('tab-print-paper').classList.add('hidden');
             document.getElementById('tab-teacher-admin').classList.add('hidden');
@@ -759,6 +807,49 @@
                 document.getElementById('btn-tab-admin').className = "px-3 py-1.5 rounded-lg bg-white text-amber-700 shadow-sm transition-all duration-200 relative";
                 renderAdminDashboard();
             }
+        }
+
+        // Admin Auth Modal Functions
+        function openAdminAuthModal() {
+            const modal = document.getElementById('adminAuthModal');
+            const input = document.getElementById('adminPasswordInput');
+            const errorMsg = document.getElementById('adminAuthError');
+            
+            if (input) input.value = '';
+            if (errorMsg) errorMsg.classList.add('hidden');
+            if (modal) modal.classList.remove('hidden');
+            
+            setTimeout(() => {
+                if (input) input.focus();
+            }, 100);
+        }
+
+        function closeAdminAuthModal() {
+            const modal = document.getElementById('adminAuthModal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function handleAdminAuthSubmit(event) {
+            event.preventDefault();
+            const input = document.getElementById('adminPasswordInput');
+            const errorMsg = document.getElementById('adminAuthError');
+
+            if (input.value === ADMIN_PASSWORD) {
+                isAdminAuthenticated = true;
+                closeAdminAuthModal();
+                switchTab('teacher-admin');
+                showToast('교사 관리자로 인증되었습니다.', 'success');
+            } else {
+                if (errorMsg) errorMsg.classList.remove('hidden');
+                input.value = '';
+                input.focus();
+            }
+        }
+
+        function lockAdminMode() {
+            isAdminAuthenticated = false;
+            switchTab('parent-form');
+            showToast('관리자 모드가 잠겼습니다.');
         }
 
         // Custom time box toggle
