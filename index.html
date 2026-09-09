@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>별누리어린이집 2학기 학부모 상담시간 수요조사</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts (Noto Sans KR) -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fffbeb',
+                            100: '#fef3c7',
+                            200: '#fde68a',
+                            300: '#fcd34d',
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                            700: '#b45309',
+                            800: '#92400e',
+                            900: '#78350f',
+                        },
+                        pastelBlue: '#e0f2fe',
+                        pastelGreen: '#dcfce7',
+                        pastelOrange: '#ffedd5',
+                        pastelPurple: '#f3e8ff'
+                    },
+                    fontFamily: {
+                        sans: ['Noto Sans KR', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+        }
+
+        /* Print styling for printing physical survey forms or summary reports */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            body {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+            }
+            .page-break {
+                page-break-before: always;
+            }
+            .shadow-lg, .shadow-md, .shadow-sm {
+                box-shadow: none !important;
+            }
+            .border-2 {
+                border-width: 1px !important;
+            }
+        }
+
+        /* Printable admin report container */
+        #admin-print-report {
+            display: none;
+        }
+
+        @media print {
+            body.is-printing-admin #tab-parent-form,
+            body.is-printing-admin #tab-print-paper,
+            body.is-printing-admin #tab-teacher-admin,
+            body.is-printing-admin header,
+            body.is-printing-admin footer {
+                display: none !important;
+            }
+            body.is-printing-admin #admin-print-report {
+                display: block !important;
+            }
+        }
+
+        .custom-radio:checked + label {
+            border-color: #f59e0b;
+            background-color: #fffbeb;
+            color: #b45309;
+            font-weight: 600;
+        }
+
+        .custom-checkbox:checked + label {
+            border-color: #f59e0b;
+            background-color: #fffbeb;
+            color: #b45309;
+            font-weight: 600;
+        }
+
+        /* Toast animation */
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .animate-toast {
+            animation: slideUp 0.3s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-white border-b border-amber-100 sticky top-0 z-30 shadow-sm no-print">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 font-bold text-xl shadow-inner">
+                    <i class="fa-solid fa-star text-amber-500"></i>
+                </div>
+                <div>
+                    <span class="text-xs font-semibold tracking-wider text-amber-600 uppercase">2학기 학부모 상담</span>
+                    <h1 class="text-lg font-bold text-slate-800 leading-tight">별누리어린이집</h1>
+                </div>
+            </div>
+
+            <!-- View Mode Switcher Buttons -->
+            <div class="flex items-center bg-slate-100 p-1 rounded-xl text-xs sm:text-sm font-medium">
+                <button onclick="switchTab('parent-form')" id="btn-tab-form" class="px-3 py-1.5 rounded-lg bg-white text-amber-700 shadow-sm transition-all duration-200">
+                    <i class="fa-regular fa-pen-to-square mr-1.5"></i>학부모 신청용
+                </button>
+                <button onclick="switchTab('print-paper')" id="btn-tab-paper" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all duration-200">
+                    <i class="fa-solid fa-print mr-1.5"></i>서면 가정통신문
+                </button>
+                <button onclick="switchTab('teacher-admin')" id="btn-tab-admin" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all duration-200 relative">
+                    <i class="fa-solid fa-user-tie mr-1.5"></i>교사 관리자
+                    <span id="badge-count" class="ml-1 px-1.5 py-0.5 bg-amber-500 text-white rounded-full text-[10px]">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto w-full p-4 sm:p-6 flex-grow">
+
+        <!-- ========================================== -->
+        <!-- TAB 1: 학부모 온라인 신청 폼 (Parent Form) -->
+        <!-- ========================================== -->
+        <section id="tab-parent-form" class="space-y-6">
+            <!-- Notice Banner Box -->
+            <div class="bg-gradient-to-r from-amber-500 to-amber-600 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
+                <div class="absolute -right-6 -bottom-6 text-white/10 text-9xl font-black pointer-events-none select-none">
+                    <i class="fa-solid fa-child-reaching"></i>
+                </div>
+                <div class="relative z-10 space-y-3">
+                    <div class="inline-flex items-center gap-2 bg-amber-700/40 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-amber-100 border border-amber-300/30">
+                        <i class="fa-solid fa-school-flag"></i> 별누리어린이집 소식
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">2026학년도 2학기 학부모 상담 안내</h2>
+                    <div class="text-amber-50 text-sm leading-relaxed sm:text-base font-light space-y-2 pt-1">
+                        <p class="font-medium text-white">안녕하세요. 별누리어린이집입니다. 🌿</p>
+                        <p>어느덧 아이들이 한층 더 자라고 성장한 모습을 보여주는 2학기가 되었습니다.<br>
+                        별누리어린이집에서는 영아들의 어린이집 생활과 발달 모습을 가정과 함께 나누고, 앞으로의 성장과 적응을 돕기 위해 2학기 학부모 상담을 진행하고자 합니다.</p>
+                        <p>이번 상담에서는 어린이집에서의 하루 일과와 또래 관계, 놀이 모습, 식사 및 수면 등 기본생활습관과 함께 영아의 발달 과정에서 보이는 변화와 성장 모습을 이야기 나눌 예정입니다.<br>
+                        특히 영아기는 짧은 시간에도 많은 변화가 나타나는 시기인 만큼, 어린이집에서 관찰되는 모습과 가정에서의 모습을 서로 공유하며 아이를 더욱 세심하게 이해하고 지원하는 시간이 되었으면 합니다. 💛</p>
+                        <p>학부모님께서는 아래 수요조사서를 확인하시어 상담 참여 희망 여부 및 가능한 시간을 선택하여 제출해 주시기 바랍니다.<br>
+                        부모님과 선생님이 함께 아이의 작은 변화와 성장을 살펴보고, 아이에게 필요한 지원을 함께 찾아가는 뜻깊은 시간이 되도록 하겠습니다.<br>
+                        바쁘시겠지만 많은 관심과 참여 부탁드립니다.</p>
+                    </div>
+                    
+                    <!-- Schedule Info Badge -->
+                    <div class="pt-3 flex flex-wrap gap-3 text-xs sm:text-sm">
+                        <div class="bg-white/20 backdrop-blur-md px-3 py-2 rounded-xl flex items-center gap-2 border border-white/20 font-medium">
+                            <i class="fa-regular fa-calendar-check text-amber-200 text-base"></i>
+                            <span><strong>상담 기간:</strong> 2026.09.28(월) ~ 10.01(목) [4일간]</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Parent Survey Interactive Form -->
+            <form id="surveyForm" onsubmit="handleFormSubmit(event)" class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 sm:p-8 space-y-8">
+                
+                <!-- Section 1: Basic Information -->
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+                        <span class="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-sm">1</span>
+                        <h3 class="text-lg font-bold text-slate-800">기본 정보 입력</h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- 반명 -->
+                        <div>
+                            <label for="className" class="block text-sm font-semibold text-slate-700 mb-1.5">
+                                반명 <span class="text-rose-500">*</span>
+                            </label>
+                            <select id="className" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-slate-50/50 outline-none transition-all">
+                                <option value="" disabled selected>반을 선택해 주세요</option>
+                                <option value="아기별1반(만0세)">아기별1반 (만0세)</option>
+                                <option value="아기별2반(만0세)">아기별2반 (만0세)</option>
+                                <option value="샛별1반(만1세)">샛별1반 (만1세)</option>
+                                <option value="샛별2반(만1세)">샛별2반 (만1세)</option>
+                                <option value="우리별반(만2세)">우리별반 (만2세)</option>
+                                <option value="두리별반(만2세)">두리별반 (만2세)</option>
+                            </select>
+                        </div>
+
+                        <!-- 이름 (유아명) -->
+                        <div>
+                            <label for="childName" class="block text-sm font-semibold text-slate-700 mb-1.5">
+                                원아 이름 (어린이 성함) <span class="text-rose-500">*</span>
+                            </label>
+                            <input type="text" id="childName" required placeholder="예: 김별누" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-slate-50/50 outline-none transition-all">
+                        </div>
+
+                        <!-- 보호자 성함 -->
+                        <div>
+                            <label for="parentName" class="block text-sm font-semibold text-slate-700 mb-1.5">
+                                보호자 성함 <span class="text-rose-500">*</span>
+                            </label>
+                            <input type="text" id="parentName" required placeholder="예: 홍길동 (모)" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-slate-50/50 outline-none transition-all">
+                        </div>
+
+                        <!-- 연락처 -->
+                        <div>
+                            <label for="parentPhone" class="block text-sm font-semibold text-slate-700 mb-1.5">
+                                연락처 <span class="text-rose-500">*</span>
+                            </label>
+                            <input type="tel" id="parentPhone" required placeholder="010-0000-0000" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-slate-50/50 outline-none transition-all">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Consultation Date Selection -->
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+                        <span class="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-sm">2</span>
+                        <h3 class="text-lg font-bold text-slate-800">상담 희망 날짜 선택</h3>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div>
+                            <input type="radio" id="date1" name="consultDate" value="2026-09-28" class="hidden custom-radio" required>
+                            <label for="date1" class="flex flex-col items-center justify-center p-3.5 border-2 border-slate-200 rounded-xl cursor-pointer hover:border-amber-300 transition-all text-center">
+                                <span class="text-xs text-slate-500 font-medium">9월 28일</span>
+                                <span class="text-base font-bold text-slate-800">월요일</span>
+                            </label>
+                        </div>
+                        <div>
+                            <input type="radio" id="date2" name="consultDate" value="2026-09-29" class="hidden custom-radio">
+                            <label for="date2" class="flex flex-col items-center justify-center p-3.5 border-2 border-slate-200 rounded-xl cursor-pointer hover:border-amber-300 transition-all text-center">
+                                <span class="text-xs text-slate-500 font-medium">9월 29일</span>
+                                <span class="text-base font-bold text-slate-800">화요일</span>
+                            </label>
+                        </div>
+                        <div>
+                            <input type="radio" id="date3" name="consultDate" value="2026-09-30" class="hidden custom-radio">
+                            <label for="date3" class="flex flex-col items-center justify-center p-3.5 border-2 border-slate-200 rounded-xl cursor-pointer hover:border-amber-300 transition-all text-center">
+                                <span class="text-xs text-slate-500 font-medium">9월 30일</span>
+                                <span class="text-base font-bold text-slate-800">수요일</span>
+                            </label>
+                        </div>
+                        <div>
+                            <input type="radio" id="date4" name="consultDate" value="2026-10-01" class="hidden custom-radio">
+                            <label for="date4" class="flex flex-col items-center justify-center p-3.5 border-2 border-slate-200 rounded-xl cursor-pointer hover:border-amber-300 transition-all text-center">
+                                <span class="text-xs text-slate-500 font-medium">10월 01일</span>
+                                <span class="text-base font-bold text-slate-800">목요일</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3: Consultation Method (방문면담 / 전화면담) -->
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+                        <span class="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-sm">3</span>
+                        <h3 class="text-lg font-bold text-slate-800">상담 방식 선택 <span class="text-rose-500 text-sm">*</span></h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <input type="radio" id="methodVisit" name="consultMethod" value="방문면담" class="hidden custom-radio" required>
+                            <label for="methodVisit" class="flex items-center p-4 border-2 border-slate-200 rounded-xl cursor-pointer hover:border-amber-300 transition-all">
+                                <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mr-3.5 text-lg">
+                                    <i class="fa-solid fa-users"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold text-slate-800 text-base">방문면담</div>
+                                    <div class="text-xs text-slate-500">어린이집 교실 방문 대면 상담</div>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div>
+                            <input type="radio" id="methodPhone" name="consultMethod" value="전화면담" class="hidden custom-radio">
+                            <label for="methodPhone" class="flex items-center p-4 border-2 border-slate-200 rounded-xl cursor-pointer hover:border-amber-300 transition-all">
+                                <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-3.5 text-lg">
+                                    <i class="fa-solid fa-phone"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold text-slate-800 text-base">전화면담</div>
+                                    <div class="text-xs text-slate-500">지정된 시간에 유선 통화 상담</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 4: Consultation Time Slot Options -->
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+                        <span class="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-sm">4</span>
+                        <h3 class="text-lg font-bold text-slate-800">부모 상담시간 선택 <span class="text-rose-500 text-sm">*</span></h3>
+                    </div>
+                    <p class="text-xs text-slate-500">희망하시는 시간대를 선택해 주세요. (우선 희망 시간대)</p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <input type="radio" id="time1" name="consultTime" value="4:30~4:45" class="hidden custom-radio" required>
+                            <label for="time1" class="flex items-center justify-between p-3.5 border-2 border-slate-200 rounded-xl cursor-pointer hover:border-amber-300 transition-all">
+                                <span class="font-semibold text-slate-800">1. 4:30 ~ 4:45</span>
+                                <span class="text-xs px-2 py-1 bg-slate-100 text-slate-600 rounded-md">15분간</span>
+                            </label>
+                        </div>
+
+                        <div>
+                            <input type="radio" id="time2" name="consultTime" value="4:50~5:05" class="hidden custom-radio">
+                            <label for="time2" class="flex items-center justify-between p-3.5 border-2 border-slate-200 rounded-xl cursor-pointer hover:border-amber-300 transition-all">
+                                <span class="font-semibold text-slate-800">2. 4:50 ~ 5:05</span>
+                                <span class="text-xs px-2 py-1 bg-slate-100 text-slate-600 rounded-md">15분간</span>
+                            </label>
+                        </div>
+
+                        <div>
+                            <input type="radio" id="time3" name="consultTime" value="5:10~5:25" class="hidden custom-radio">
+                            <label for="time3" class="flex items-center justify-between p-3.5 border-2 border-slate-200 rounded-xl cursor-pointer hover:border-amber-300 transition-all">
+                                <span class="font-semibold text-slate-800">3. 5:10 ~ 5:25</span>
+                                <span class="text-xs px-2 py-1 bg-slate-100 text-slate-600 rounded-md">15분간</span>
+                            </label>
+                        </div>
+
+                        <div>
+                            <input type="radio" id="time4" name="consultTime" value="5:25~5:40" class="hidden custom-radio">
+                            <label for="time4" class="flex items-center justify-between p-3.5 border-2 border-slate-200 rounded-xl cursor-pointer hover:border-amber-300 transition-all">
+                                <span class="font-semibold text-slate-800">4. 5:25 ~ 5:40</span>
+                                <span class="text-xs px-2 py-1 bg-slate-100 text-slate-600 rounded-md">15분간</span>
+                            </label>
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <input type="radio" id="time5" name="consultTime" value="그 외 시간" class="hidden custom-radio" onchange="toggleCustomTimeInput(true)">
+                            <label for="time5" class="flex items-center justify-between p-3.5 border-2 border-slate-200 rounded-xl cursor-pointer hover:border-amber-300 transition-all">
+                                <span class="font-semibold text-slate-800">5. 그 외 시간 (별도 조율 필요)</span>
+                                <span class="text-xs px-2 py-1 bg-amber-100 text-amber-700 font-medium rounded-md">담임 교사 협의</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Additional time detail input -->
+                    <div id="customTimeBox" class="hidden pt-2">
+                        <label for="customTimeDetail" class="block text-xs font-semibold text-slate-600 mb-1">희망 시간 구체적 입력 (선택사항)</label>
+                        <input type="text" id="customTimeDetail" placeholder="예: 오후 3시 30분 이후 가능 또는 오후 6시 정각" class="w-full px-3.5 py-2 rounded-xl border border-amber-300 bg-amber-50/50 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    </div>
+                </div>
+
+                <!-- Important Notice Box MANDATORY SPEC REQUIREMENT -->
+                <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl">
+                    <div class="flex items-start gap-3">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-600 text-lg mt-0.5"></i>
+                        <div class="text-xs sm:text-sm text-amber-900 leading-relaxed font-medium">
+                            <strong>[중요 안내]</strong><br>
+                            각 부모님들의 선택사항은 수요조사 취합 후 변경될 수 있음을 미리 안내 드리며 담임선생님과 개별 논의 후 정확하게 결정됩니다.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Brand Marker -->
+                <div class="pt-4 text-center border-t border-slate-100">
+                    <div class="text-lg font-bold text-slate-800 tracking-wider">
+                        <i class="fa-solid fa-star text-amber-500 mr-1.5"></i>별누리어린이집
+                    </div>
+                    <p class="text-xs text-slate-400 mt-0.5">2학기 학부모 개별 상담 안내</p>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="w-full py-4 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold text-base rounded-xl shadow-md hover:shadow-lg active:scale-[0.99] transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    수요조사 제출하기
+                </button>
+
+            </form>
+        </section>
+
+
+        <!-- ========================================== -->
+        <!-- TAB 2: 종이 출력용 가정통신문 양식 (Printable Paper) -->
+        <!-- ========================================== -->
+        <section id="tab-print-paper" class="hidden space-y-4">
+            <!-- Print control banner -->
+            <div class="no-print bg-slate-800 text-white p-4 rounded-xl flex items-center justify-between shadow-md">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-print text-amber-400 text-xl"></i>
+                    <div>
+                        <h4 class="font-bold text-sm">종이 가정통신문 출력 모드</h4>
+                        <p class="text-xs text-slate-300">원생 가방에 넣어 보낼 서면 조사표를 A4 크기로 바로 인쇄하실 수 있습니다.</p>
+                    </div>
+                </div>
+                <button onclick="window.print()" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-lg text-xs flex items-center gap-1.5 transition-all">
+                    <i class="fa-solid fa-print"></i> 인쇄하기 / PDF 저장
+                </button>
+            </div>
+
+            <!-- Printable Sheet Content Container -->
+            <div class="bg-white p-8 sm:p-12 rounded-2xl border border-slate-300 shadow-sm space-y-6 text-slate-900 leading-relaxed max-w-3xl mx-auto font-sans">
+                
+                <!-- Document Header -->
+                <div class="text-center space-y-2 border-b-2 border-slate-800 pb-6">
+                    <div class="text-xs tracking-widest uppercase font-bold text-slate-500">가 정 통 신 문</div>
+                    <h2 class="text-2xl sm:text-3xl font-black text-slate-900">2026학년도 2학기 학부모 상담 안내</h2>
+                    <p class="text-xs text-slate-600">별누리어린이집 학부모님께</p>
+                </div>
+
+                <!-- Guidance Body -->
+                <div class="space-y-3 text-sm text-slate-700 leading-relaxed">
+                    <p class="font-semibold text-slate-900">안녕하세요. 별누리어린이집입니다. 🌿</p>
+                    <p>
+                        어느덧 아이들이 한층 더 자라고 성장한 모습을 보여주는 2학기가 되었습니다.<br>
+                        별누리어린이집에서는 영아들의 어린이집 생활과 발달 모습을 가정과 함께 나누고, 앞으로의 성장과 적응을 돕기 위해 2학기 학부모 상담을 진행하고자 합니다.
+                    </p>
+                    <p>
+                        이번 상담에서는 어린이집에서의 하루 일과와 또래 관계, 놀이 모습, 식사 및 수면 등 기본생활습관과 함께 영아의 발달 과정에서 보이는 변화와 성장 모습을 이야기 나눌 예정입니다.<br>
+                        특히 영아기는 짧은 시간에도 많은 변화가 나타나는 시기인 만큼, 어린이집에서 관찰되는 모습과 가정에서의 모습을 서로 공유하며 아이를 더욱 세심하게 이해하고 지원하는 시간이 되었으면 합니다. 💛
+                    </p>
+                    <p>
+                        학부모님께서는 아래 수요조사서를 확인하시어 상담 참여 희망 여부 및 가능한 시간을 선택하여 제출해 주시기 바랍니다.<br>
+                        부모님과 선생님이 함께 아이의 작은 변화와 성장을 살펴보고, 아이에게 필요한 지원을 함께 찾아가는 뜻깊은 시간이 되도록 하겠습니다.<br>
+                        바쁘시겠지만 많은 관심과 참여 부탁드립니다.
+                    </p>
+                </div>
+
+                <!-- Summary Info Table -->
+                <div class="border border-slate-300 rounded-lg overflow-hidden text-sm">
+                    <div class="bg-slate-100 p-2.5 font-bold border-b border-slate-300 text-slate-800 flex items-center gap-2">
+                        <i class="fa-regular fa-calendar font-normal"></i> 상담 개요 안내
+                    </div>
+                    <div class="p-4 space-y-2 bg-slate-50/50">
+                        <p><strong>• 상담 기간 :</strong> 2026년 9월 28일(월) ~ 10월 1일(목)</p>
+                        <p><strong>• 상담 대상 :</strong> 별누리어린이집 전 원아 학부모님</p>
+                        <p><strong>• 상담 시간 :</strong> 1회당 15분 소요 (16:30 ~ 17:40)</p>
+                        <p><strong>• 상담 방식 :</strong> 방문면담 또는 전화면담 중 선택</p>
+                    </div>
+                </div>
+
+                <!-- Physical Cut Line Sheet (수요조사 회신용) -->
+                <div class="pt-6 border-t-2 border-dashed border-slate-400 relative">
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-white px-3 text-xs text-slate-400 flex items-center gap-1">
+                        <i class="fa-solid fa-scissors"></i> 절 취 선 (이 부분을 잘라 담임선생님께 전달해 주세요)
+                    </div>
+
+                    <div class="mt-4 border-2 border-slate-800 rounded-xl p-5 space-y-5 bg-white">
+                        <h3 class="text-center font-bold text-lg text-slate-900 border-b border-slate-200 pb-2">
+                            2학기 학부모 상담시간 수요조사 회신서
+                        </h3>
+
+                        <!-- Cut-form Fill inputs -->
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
+                            <div class="border border-slate-300 p-2 rounded">
+                                <span class="font-bold text-slate-600">반 명 :</span> ___________ 반
+                            </div>
+                            <div class="border border-slate-300 p-2 rounded">
+                                <span class="font-bold text-slate-600">유아명 :</span> ___________
+                            </div>
+                            <div class="border border-slate-300 p-2 rounded col-span-2 sm:col-span-1">
+                                <span class="font-bold text-slate-600">보호자명 :</span> _________ (인)
+                            </div>
+                        </div>
+
+                        <!-- Date Option checkboxes -->
+                        <div class="space-y-1.5 text-sm">
+                            <div class="font-bold text-slate-800">1. 상담 희망 날짜 선택:</div>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs border border-slate-200 p-2.5 rounded">
+                                <div>[ &nbsp; ] 09월 28일(월)</div>
+                                <div>[ &nbsp; ] 09월 29일(화)</div>
+                                <div>[ &nbsp; ] 09월 30일(수)</div>
+                                <div>[ &nbsp; ] 10월 01일(목)</div>
+                            </div>
+                        </div>
+
+                        <!-- Method Option checkboxes -->
+                        <div class="space-y-1.5 text-sm">
+                            <div class="font-bold text-slate-800">2. 상담 방식 체크:</div>
+                            <div class="flex gap-6 border border-slate-200 p-2.5 rounded text-xs">
+                                <div>[ &nbsp; ] 방문면담</div>
+                                <div>[ &nbsp; ] 전화면담</div>
+                            </div>
+                        </div>
+
+                        <!-- Time Option checkboxes -->
+                        <div class="space-y-1.5 text-sm">
+                            <div class="font-bold text-slate-800">3. 부모 상담시간 체크:</div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs border border-slate-200 p-2.5 rounded">
+                                <div>[ &nbsp; ] 1. 4:30 ~ 4:45</div>
+                                <div>[ &nbsp; ] 2. 4:50 ~ 5:05</div>
+                                <div>[ &nbsp; ] 3. 5:10 ~ 5:25</div>
+                                <div>[ &nbsp; ] 4. 5:25 ~ 5:40</div>
+                                <div class="col-span-1 sm:col-span-2">[ &nbsp; ] 5. 그 외 시간 (희망시간: ____________________ )</div>
+                            </div>
+                        </div>
+
+                        <!-- Mandatory Notice inside paper sheet -->
+                        <div class="bg-slate-100 p-3 rounded text-xs text-slate-800 leading-snug border border-slate-300">
+                            <strong>※ 중요 안내 :</strong><br>
+                            [각 부모님들의 선택사항은 수요조사 취합 후 변경될 수 있음을 미리 안내 드리며 담임선생님과 개별 논의 후 정확하게 결정됩니다.]
+                        </div>
+
+                        <!-- Footer name in paper sheet -->
+                        <div class="text-right pt-2 font-bold text-base text-slate-900">
+                            별누리어린이집 원장 귀하
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ========================================== -->
+        <!-- TAB 3: 교사용 관리자 모드 (Teacher Admin) -->
+        <!-- ========================================== -->
+        <section id="tab-teacher-admin" class="hidden space-y-6">
+            
+            <!-- Dashboard Controls & Stats Header -->
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+                <div class="flex flex-wrap justify-between items-center gap-4 border-b border-slate-100 pb-4">
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-amber-500"></i> 학부모 상담 수요조사 제출현황
+                        </h3>
+                        <p class="text-xs text-slate-500">제출된 실시간 현황 및 타임테이블 배치 현황입니다.</p>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button onclick="seedSampleData()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition-all">
+                            <i class="fa-solid fa-database mr-1"></i> 샘플 데이터 생성
+                        </button>
+                        <button onclick="printAdminSubmissions()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg transition-all shadow-sm">
+                            <i class="fa-solid fa-print mr-1"></i> 개별 제출내역 전체 인쇄
+                        </button>
+                        <button onclick="exportToCSV()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg transition-all">
+                            <i class="fa-solid fa-file-excel mr-1"></i> Excel/CSV 다운로드
+                        </button>
+                        <button onclick="clearAllData()" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-semibold rounded-lg transition-all">
+                            <i class="fa-solid fa-trash-can mr-1"></i> 초기화
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filter Controls -->
+                <div class="flex flex-wrap gap-3 items-center text-sm">
+                    <span class="font-semibold text-slate-700 text-xs">반 선택 필터:</span>
+                    <select id="adminClassFilter" onchange="renderAdminDashboard()" class="px-3 py-1.5 rounded-lg border border-slate-300 text-xs bg-slate-50 outline-none">
+                        <option value="ALL">전체 학급 보기</option>
+                        <option value="아기별1반(만0세)">아기별1반 (만0세)</option>
+                        <option value="아기별2반(만0세)">아기별2반 (만0세)</option>
+                        <option value="샛별1반(만1세)">샛별1반 (만1세)</option>
+                        <option value="샛별2반(만1세)">샛별2반 (만1세)</option>
+                        <option value="우리별반(만2세)">우리별반 (만2세)</option>
+                        <option value="두리별반(만2세)">두리별반 (만2세)</option>
+                    </select>
+
+                    <div class="ml-auto text-xs text-slate-500">
+                        총 <strong id="totalSubmissionsCount" class="text-amber-600 font-bold">0</strong>건 제출됨
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timetable Matrix Grid View -->
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+                <h4 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                    <i class="fa-regular fa-clock text-amber-500"></i> 날짜별 / 시간대별 상담 신청 현황판
+                </h4>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-left border-collapse min-w-[600px]">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 border-b border-slate-200">
+                                <th class="p-3 font-bold border-r border-slate-200 w-28">시간대</th>
+                                <th class="p-3 font-bold text-center border-r border-slate-200">9/28 (월)</th>
+                                <th class="p-3 font-bold text-center border-r border-slate-200">9/29 (화)</th>
+                                <th class="p-3 font-bold text-center border-r border-slate-200">9/30 (수)</th>
+                                <th class="p-3 font-bold text-center">10/01 (목)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="matrixTableBody" class="divide-y divide-slate-200">
+                            <!-- Matrix rows loaded dynamically via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Detailed Submissions Table -->
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+                <h4 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                    <i class="fa-solid fa-list text-amber-500"></i> 개별 제출 목록
+                </h4>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-left border-collapse min-w-[600px]">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 border-b border-slate-200">
+                                <th class="p-2.5 font-bold">반명</th>
+                                <th class="p-2.5 font-bold">원아명</th>
+                                <th class="p-2.5 font-bold">보호자</th>
+                                <th class="p-2.5 font-bold">희망 날짜</th>
+                                <th class="p-2.5 font-bold">상담 방식</th>
+                                <th class="p-2.5 font-bold">희망 시간</th>
+                                <th class="p-2.5 font-bold text-center">관리</th>
+                            </tr>
+                        </thead>
+                        <tbody id="submissionTableBody" class="divide-y divide-slate-100 text-slate-700">
+                            <!-- Loaded via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Hidden Dedicated Printable Admin Report Section -->
+    <div id="admin-print-report" class="p-6 text-slate-900 font-sans max-w-4xl mx-auto">
+        <!-- Print Header -->
+        <div class="text-center border-b-2 border-slate-800 pb-4 mb-6">
+            <h2 class="text-2xl font-black text-slate-900">별누리어린이집 2학기 학부모 상담 수요조사 제출 명부</h2>
+            <p id="printReportSubhead" class="text-xs text-slate-600 mt-1">출력일자: 2026년 | 제출 목록</p>
+        </div>
+
+        <!-- Print Summary Stats Bar -->
+        <div class="flex justify-between items-center text-xs border border-slate-300 p-3 rounded-lg mb-6 bg-slate-50">
+            <div><strong>인쇄 필터:</strong> <span id="printFilterLabel">전체</span></div>
+            <div><strong>총 제출 건수:</strong> <span id="printTotalCount">0</span>건</div>
+            <div><strong>상담 기간:</strong> 2026.09.28(월) ~ 10.01(목)</div>
+        </div>
+
+        <!-- Printable Individual Submission Cards Table / Cards Grid -->
+        <div id="printCardsContainer" class="space-y-4">
+            <!-- Dynamic content injected via printAdminSubmissions() -->
+        </div>
+
+        <!-- Footer for signature -->
+        <div class="mt-8 pt-4 border-t border-slate-300 flex justify-between items-end text-xs text-slate-600">
+            <div>별누리어린이집 교사용 상담 관리 문서</div>
+            <div class="text-right">
+                <span>담당 교사 확인: ____________________ (인)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Box -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 hidden">
+        <div class="bg-slate-900 text-white px-5 py-3.5 rounded-xl shadow-2xl flex items-center gap-3 border border-slate-700 animate-toast">
+            <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+            <span id="toastMessage" class="text-sm font-medium">제출이 성공적으로 완료되었습니다.</span>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500 no-print">
+        <div class="max-w-4xl mx-auto px-4 space-y-1">
+            <p class="font-bold text-slate-700">별누리어린이집 2학기 학부모 상담 수요조사 시스템</p>
+            <p>상담기간: 2026.09.28(월) ~ 2026.10.01(목) | 문의: 원 행정실</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Storage Key
+        const STORAGE_KEY = 'byulnuri_survey_responses';
+
+        // Initial Sample Data Generator
+        const INITIAL_SAMPLES = [
+            {
+                id: '101',
+                className: '아기별1반(만0세)',
+                childName: '김민준',
+                parentName: '김철수 (부)',
+                parentPhone: '010-1234-5678',
+                consultDate: '2026-09-28',
+                consultMethod: '방문면담',
+                consultTime: '4:30~4:45',
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: '102',
+                className: '샛별1반(만1세)',
+                childName: '이서아',
+                parentName: '박영희 (모)',
+                parentPhone: '010-8765-4321',
+                consultDate: '2026-09-29',
+                consultMethod: '전화면담',
+                consultTime: '5:10~5:25',
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: '103',
+                className: '우리별반(만2세)',
+                childName: '박지후',
+                parentName: '박성민 (부)',
+                parentPhone: '010-3333-4444',
+                consultDate: '2026-09-30',
+                consultMethod: '방문면담',
+                consultTime: '4:50~5:05',
+                createdAt: new Date().toISOString()
+            }
+        ];
+
+        // Initialize App
+        window.addEventListener('DOMContentLoaded', () => {
+            const data = getStoredResponses();
+            if (data.length === 0) {
+                // Pre-populate initial sample data for better preview experience
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_SAMPLES));
+            }
+            updateBadgeCount();
+        });
+
+        // Get responses from local storage
+        function getStoredResponses() {
+            try {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                return stored ? JSON.parse(stored) : [];
+            } catch (e) {
+                console.error("Error reading localStorage", e);
+                return [];
+            }
+        }
+
+        // Tab Navigation Switcher
+        function switchTab(tabId) {
+            document.getElementById('tab-parent-form').classList.add('hidden');
+            document.getElementById('tab-print-paper').classList.add('hidden');
+            document.getElementById('tab-teacher-admin').classList.add('hidden');
+
+            document.getElementById('btn-tab-form').className = "px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all duration-200";
+            document.getElementById('btn-tab-paper').className = "px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all duration-200";
+            document.getElementById('btn-tab-admin').className = "px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all duration-200 relative";
+
+            if (tabId === 'parent-form') {
+                document.getElementById('tab-parent-form').classList.remove('hidden');
+                document.getElementById('btn-tab-form').className = "px-3 py-1.5 rounded-lg bg-white text-amber-700 shadow-sm transition-all duration-200";
+            } else if (tabId === 'print-paper') {
+                document.getElementById('tab-print-paper').classList.remove('hidden');
+                document.getElementById('btn-tab-paper').className = "px-3 py-1.5 rounded-lg bg-white text-amber-700 shadow-sm transition-all duration-200";
+            } else if (tabId === 'teacher-admin') {
+                document.getElementById('tab-teacher-admin').classList.remove('hidden');
+                document.getElementById('btn-tab-admin').className = "px-3 py-1.5 rounded-lg bg-white text-amber-700 shadow-sm transition-all duration-200 relative";
+                renderAdminDashboard();
+            }
+        }
+
+        // Custom time box toggle
+        function toggleCustomTimeInput(show) {
+            const box = document.getElementById('customTimeBox');
+            if (show) {
+                box.classList.remove('hidden');
+            } else {
+                box.classList.add('hidden');
+            }
+        }
+
+        // Add event listeners for other time radios to hide custom input box
+        document.querySelectorAll('input[name="consultTime"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                if (e.target.value !== '그 외 시간') {
+                    toggleCustomTimeInput(false);
+                }
+            });
+        });
+
+        // Form Submission Handler
+        function handleFormSubmit(event) {
+            event.preventDefault();
+
+            const className = document.getElementById('className').value;
+            const childName = document.getElementById('childName').value.trim();
+            const parentName = document.getElementById('parentName').value.trim();
+            const parentPhone = document.getElementById('parentPhone').value.trim();
+
+            const dateElem = document.querySelector('input[name="consultDate"]:checked');
+            const methodElem = document.querySelector('input[name="consultMethod"]:checked');
+            const timeElem = document.querySelector('input[name="consultTime"]:checked');
+            const customDetail = document.getElementById('customTimeDetail').value.trim();
+
+            if (!dateElem || !methodElem || !timeElem) {
+                showToast("모든 필수 항목(날짜, 방식, 시간)을 선택해 주세요.", "error");
+                return;
+            }
+
+            let timeVal = timeElem.value;
+            if (timeVal === '그 외 시간' && customDetail) {
+                timeVal = `그 외 시간 (${customDetail})`;
+            }
+
+            const responseObj = {
+                id: Date.now().toString(),
+                className,
+                childName,
+                parentName,
+                parentPhone,
+                consultDate: dateElem.value,
+                consultMethod: methodElem.value,
+                consultTime: timeVal,
+                createdAt: new Date().toISOString()
+            };
+
+            const list = getStoredResponses();
+            list.push(responseObj);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+
+            showToast(`${childName} 어린이의 수요조사가 제출되었습니다.`, "success");
+            updateBadgeCount();
+            document.getElementById('surveyForm').reset();
+            toggleCustomTimeInput(false);
+        }
+
+        // Toast Notification Display
+        function showToast(msg, type = "success") {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMessage');
+            const toastIcon = document.getElementById('toastIcon');
+
+            toastMsg.innerText = msg;
+            if (type === "success") {
+                toastIcon.className = "fa-solid fa-circle-check text-emerald-400 text-lg";
+            } else {
+                toastIcon.className = "fa-solid fa-circle-exclamation text-rose-400 text-lg";
+            }
+
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3500);
+        }
+
+        // Update Submission Badge Count
+        function updateBadgeCount() {
+            const list = getStoredResponses();
+            document.getElementById('badge-count').innerText = list.length;
+        }
+
+        // Render Teacher Admin Dashboard
+        function renderAdminDashboard() {
+            const filterClass = document.getElementById('adminClassFilter').value;
+            let list = getStoredResponses();
+
+            if (filterClass !== 'ALL') {
+                list = list.filter(item => item.className === filterClass);
+            }
+
+            document.getElementById('totalSubmissionsCount').innerText = list.length;
+
+            // Render Submission List Table
+            const tbody = document.getElementById('submissionTableBody');
+            tbody.innerHTML = '';
+
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400">제출된 수요조사 내역이 없습니다.</td></tr>`;
+            } else {
+                list.forEach(item => {
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-50 transition-colors";
+                    
+                    const formattedDate = item.consultDate ? item.consultDate.replace('2026-', '') : '';
+
+                    tr.innerHTML = `
+                        <td class="p-2.5 font-semibold text-slate-800">${escapeHtml(item.className)}</td>
+                        <td class="p-2.5 font-bold text-amber-700">${escapeHtml(item.childName)}</td>
+                        <td class="p-2.5">${escapeHtml(item.parentName)} (${escapeHtml(item.parentPhone)})</td>
+                        <td class="p-2.5 font-medium">${formattedDate}</td>
+                        <td class="p-2.5">
+                            <span class="px-2 py-0.5 rounded-full text-[11px] ${item.consultMethod === '방문면담' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'}">
+                                ${escapeHtml(item.consultMethod)}
+                            </span>
+                        </td>
+                        <td class="p-2.5 font-medium">${escapeHtml(item.consultTime)}</td>
+                        <td class="p-2.5 text-center">
+                            <button onclick="printSingleSubmission('${item.id}')" class="text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 p-1.5 rounded transition-colors mr-1" title="개별 인쇄">
+                                <i class="fa-solid fa-print"></i>
+                            </button>
+                            <button onclick="deleteResponse('${item.id}')" class="text-slate-400 hover:text-rose-600 hover:bg-rose-50 p-1.5 rounded transition-colors" title="삭제">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            // Render Matrix Grid View
+            renderMatrixGrid(list);
+        }
+
+        // Render Timetable Matrix Grid
+        function renderMatrixGrid(list) {
+            const matrixBody = document.getElementById('matrixTableBody');
+            matrixBody.innerHTML = '';
+
+            const timeSlots = [
+                '4:30~4:45',
+                '4:50~5:05',
+                '5:10~5:25',
+                '5:25~5:40',
+                '그 외 시간'
+            ];
+
+            const dates = ['2026-09-28', '2026-09-29', '2026-09-30', '2026-10-01'];
+
+            timeSlots.forEach(slot => {
+                const tr = document.createElement('tr');
+                let rowHtml = `<td class="p-2.5 font-semibold bg-slate-50 border-r border-slate-200">${slot}</td>`;
+
+                dates.forEach(d => {
+                    const matched = list.filter(item => item.consultDate === d && item.consultTime.includes(slot));
+                    
+                    rowHtml += `<td class="p-2 border-r border-slate-200 align-top">`;
+                    if (matched.length === 0) {
+                        rowHtml += `<span class="text-slate-300 text-[10px] block text-center py-2">-</span>`;
+                    } else {
+                        matched.forEach(m => {
+                            rowHtml += `
+                                <div class="mb-1 p-1.5 rounded border ${m.consultMethod === '방문면담' ? 'bg-amber-50 border-amber-200 text-amber-900' : 'bg-blue-50 border-blue-200 text-blue-900'}">
+                                    <div class="font-bold flex justify-between items-center">
+                                        <span>${escapeHtml(m.childName)}</span>
+                                        <span class="text-[9px] opacity-75">${escapeHtml(m.className.split('(')[0])}</span>
+                                    </div>
+                                    <div class="text-[10px] opacity-80">${escapeHtml(m.consultMethod)}</div>
+                                </div>
+                            `;
+                        });
+                    }
+                    rowHtml += `</td>`;
+                });
+
+                tr.innerHTML = rowHtml;
+                matrixBody.appendChild(tr);
+            });
+        }
+
+        // Delete Response
+        function deleteResponse(id) {
+            if (confirm('해당 응답 건을 삭제하시겠습니까?')) {
+                let list = getStoredResponses();
+                list = list.filter(item => item.id !== id);
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+                showToast('삭제되었습니다.', 'success');
+                updateBadgeCount();
+                renderAdminDashboard();
+            }
+        }
+
+        // Add Mock Sample Data
+        function seedSampleData() {
+            let list = getStoredResponses();
+            list = list.concat(INITIAL_SAMPLES);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+            showToast('샘플 데이터가 추가되었습니다.');
+            updateBadgeCount();
+            renderAdminDashboard();
+        }
+
+        // Clear All Responses
+        function clearAllData() {
+            if (confirm('모든 제출 데이터를 초기화하시겠습니까?')) {
+                localStorage.removeItem(STORAGE_KEY);
+                showToast('데이터가 초기화되었습니다.');
+                updateBadgeCount();
+                renderAdminDashboard();
+            }
+        }
+
+        // Export to CSV Function
+        function exportToCSV() {
+            const list = getStoredResponses();
+            if (list.length === 0) {
+                showToast('다운로드할 데이터가 없습니다.', 'error');
+                return;
+            }
+
+            let csvContent = "\uFEFF"; // UTF-8 BOM
+            csvContent += "반명,원아명,보호자명,연락처,희망일자,상담방식,희망시간대,제출일시\n";
+
+            list.forEach(row => {
+                const line = [
+                    `"${row.className || ''}"`,
+                    `"${row.childName || ''}"`,
+                    `"${row.parentName || ''}"`,
+                    `"${row.parentPhone || ''}"`,
+                    `"${row.consultDate || ''}"`,
+                    `"${row.consultMethod || ''}"`,
+                    `"${row.consultTime || ''}"`,
+                    `"${row.createdAt || ''}"`
+                ].join(',');
+                csvContent += line + "\n";
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `별누리어린이집_상담수요조사_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Helper: Escape HTML
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Print Single Individual Submission Function
+        function printSingleSubmission(id) {
+            const list = getStoredResponses();
+            const item = list.find(r => r.id === id);
+            if (!item) {
+                showToast('해당 데이터를 찾을 수 없습니다.', 'error');
+                return;
+            }
+
+            const container = document.getElementById('printCardsContainer');
+            const todayStr = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
+            
+            document.getElementById('printReportSubhead').innerText = `인쇄일자: ${todayStr} | 개별 학부모 상담 신청서`;
+            document.getElementById('printFilterLabel').innerText = `${item.className} - ${item.childName}`;
+            document.getElementById('printTotalCount').innerText = '1';
+
+            const formattedDate = item.consultDate ? item.consultDate.replace('2026-', '') : '';
+
+            container.innerHTML = `
+                <div class="border-2 border-slate-800 rounded-2xl p-8 bg-white space-y-6 max-w-2xl mx-auto shadow-none my-4">
+                    <!-- 헤더 -->
+                    <div class="text-center border-b-2 border-slate-800 pb-4">
+                        <div class="text-xs font-bold text-amber-600 uppercase tracking-widest mb-1">별누리어린이집 2학기 학부모 개별 상담</div>
+                        <h3 class="text-2xl font-black text-slate-900">학부모 상담 수요조사서 (개별 신청 내역)</h3>
+                    </div>
+
+                    <!-- 원아 및 보호자 기본정보 -->
+                    <div class="grid grid-cols-2 gap-4 text-sm bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <div><strong class="text-slate-600">반 명:</strong> <span class="font-bold text-slate-900">${escapeHtml(item.className)}</span></div>
+                        <div><strong class="text-slate-600">원아명:</strong> <span class="font-bold text-amber-700 text-base">${escapeHtml(item.childName)}</span></div>
+                        <div><strong class="text-slate-600">보호자명:</strong> <span class="font-medium text-slate-900">${escapeHtml(item.parentName)}</span></div>
+                        <div><strong class="text-slate-600">연락처:</strong> <span class="font-medium text-slate-900">${escapeHtml(item.parentPhone)}</span></div>
+                    </div>
+
+                    <!-- 학부모 신청 상세 내역 -->
+                    <div class="space-y-3 text-sm">
+                        <h4 class="font-bold text-slate-800 border-b border-slate-200 pb-1 flex items-center gap-2">
+                            <i class="fa-solid fa-clipboard-check text-amber-500"></i> 학부모 희망 상담 선택사항
+                        </h4>
+                        <table class="w-full border border-slate-300 text-left rounded-lg overflow-hidden text-xs sm:text-sm">
+                            <tr class="border-b border-slate-200 bg-slate-50">
+                                <td class="p-3 font-semibold text-slate-700 w-1/3 border-r border-slate-200">1. 상담 희망 날짜</td>
+                                <td class="p-3 font-bold text-slate-900">${formattedDate}</td>
+                            </tr>
+                            <tr class="border-b border-slate-200">
+                                <td class="p-3 font-semibold text-slate-700 border-r border-slate-200">2. 상담 방식</td>
+                                <td class="p-3 font-bold text-indigo-700">${escapeHtml(item.consultMethod)}</td>
+                            </tr>
+                            <tr class="bg-slate-50">
+                                <td class="p-3 font-semibold text-slate-700 border-r border-slate-200">3. 부모 상담시간</td>
+                                <td class="p-3 font-bold text-amber-700">${escapeHtml(item.consultTime)}</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- 안내 사항 -->
+                    <div class="bg-amber-50 border border-amber-200 p-3.5 rounded-xl text-xs text-amber-900 leading-relaxed">
+                        <strong>[안내사항]</strong> 본 선택사항은 수요조사 취합 후 최종 확정되며, 담임교사와 개별 안내를 통해 정확한 상담 시간이 결정됩니다.
+                    </div>
+
+                    <!-- 교사 수기 기재 및 확인란 -->
+                    <div class="border-2 border-dashed border-slate-300 rounded-xl p-5 space-y-3 bg-slate-50/50">
+                        <div class="flex justify-between items-center border-b border-slate-200 pb-2">
+                            <h4 class="font-bold text-slate-800 text-sm">
+                                <i class="fa-solid fa-pen-to-square text-amber-600 mr-1"></i> 담임교사 상담 확정 및 기록란
+                            </h4>
+                            <span class="text-[11px] text-slate-400">교사 수기 작성용</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 text-xs">
+                            <div class="border border-slate-300 bg-white p-2.5 rounded">
+                                <strong>최종 확정 일시:</strong> ____월 ____일 (   ) ____:____
+                            </div>
+                            <div class="border border-slate-300 bg-white p-2.5 rounded">
+                                <strong>상담 방식:</strong> [ &nbsp; ] 방문면담 &nbsp; [ &nbsp; ] 전화면담
+                            </div>
+                        </div>
+                        <div class="border border-slate-300 bg-white p-3 rounded h-24 text-xs text-slate-400">
+                            <strong>상담 메모 / 특이사항:</strong>
+                        </div>
+                        <div class="flex justify-between items-center text-xs pt-2 text-slate-600">
+                            <span>제출 일시: ${new Date(item.createdAt).toLocaleString('ko-KR')}</span>
+                            <span class="font-bold">담임교사 확인: __________________ (인)</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Apply body class for printing mode
+            document.body.classList.add('is-printing-admin');
+
+            // Trigger print
+            window.print();
+
+            // Cleanup
+            setTimeout(() => {
+                document.body.classList.remove('is-printing-admin');
+            }, 500);
+        }
+
+        // Print All Admin Submissions Report Function
+        function printAdminSubmissions() {
+            const filterClass = document.getElementById('adminClassFilter').value;
+            let list = getStoredResponses();
+
+            if (filterClass !== 'ALL') {
+                list = list.filter(item => item.className === filterClass);
+            }
+
+            if (list.length === 0) {
+                showToast('인쇄할 제출 내역이 없습니다.', 'error');
+                return;
+            }
+
+            // Update Print Header Info
+            const todayStr = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('printReportSubhead').innerText = `인쇄일자: ${todayStr} | 별누리어린이집 학부모 상담 수신표`;
+            document.getElementById('printFilterLabel').innerText = filterClass === 'ALL' ? '전체 학급' : filterClass;
+            document.getElementById('printTotalCount').innerText = list.length;
+
+            // Build Printable Submissions Cards/Table
+            const container = document.getElementById('printCardsContainer');
+            container.innerHTML = '';
+
+            // Table View for print
+            let tableHtml = `
+                <table class="w-full text-xs text-left border-collapse border border-slate-300">
+                    <thead>
+                        <tr class="bg-slate-100 text-slate-800 border-b border-slate-300">
+                            <th class="p-2 border-r border-slate-300 font-bold w-8 text-center">No</th>
+                            <th class="p-2 border-r border-slate-300 font-bold">반명</th>
+                            <th class="p-2 border-r border-slate-300 font-bold">원아명</th>
+                            <th class="p-2 border-r border-slate-300 font-bold">보호자 / 연락처</th>
+                            <th class="p-2 border-r border-slate-300 font-bold">희망일자</th>
+                            <th class="p-2 border-r border-slate-300 font-bold">상담방식</th>
+                            <th class="p-2 border-r border-slate-300 font-bold">희망 시간대</th>
+                            <th class="p-2 font-bold text-center w-24">확정 시간(교사)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-300">
+            `;
+
+            list.forEach((item, index) => {
+                const formattedDate = item.consultDate ? item.consultDate.replace('2026-', '') : '';
+                tableHtml += `
+                    <tr>
+                        <td class="p-2 border-r border-slate-300 text-center font-medium">${index + 1}</td>
+                        <td class="p-2 border-r border-slate-300 font-semibold">${escapeHtml(item.className)}</td>
+                        <td class="p-2 border-r border-slate-300 font-bold text-slate-900">${escapeHtml(item.childName)}</td>
+                        <td class="p-2 border-r border-slate-300">${escapeHtml(item.parentName)}<br><span class="text-[10px] text-slate-500">${escapeHtml(item.parentPhone)}</span></td>
+                        <td class="p-2 border-r border-slate-300 font-medium">${formattedDate}</td>
+                        <td class="p-2 border-r border-slate-300">${escapeHtml(item.consultMethod)}</td>
+                        <td class="p-2 border-r border-slate-300 font-medium">${escapeHtml(item.consultTime)}</td>
+                        <td class="p-2 text-center text-slate-300 font-mono">______</td>
+                    </tr>
+                `;
+            });
+
+            tableHtml += `
+                    </tbody>
+                </table>
+            `;
+
+            // Also render individual printable card summary boxes below table
+            let cardsHtml = `
+                <div class="mt-6 space-y-3">
+                    <h4 class="font-bold text-xs text-slate-700 border-b border-slate-300 pb-1">개별 원아 상담 신청서 카드 (클립보드 철 / 개별 보관용)</h4>
+                    <div class="grid grid-cols-2 gap-3">
+            `;
+
+            list.forEach((item, index) => {
+                cardsHtml += `
+                    <div class="border border-slate-300 rounded-lg p-3 text-xs bg-white space-y-1.5 shadow-none">
+                        <div class="flex justify-between items-center border-b border-slate-200 pb-1">
+                            <span class="font-bold text-slate-800">[${escapeHtml(item.className)}] ${escapeHtml(item.childName)} 원아</span>
+                            <span class="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded border border-slate-300">${escapeHtml(item.consultMethod)}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-1 text-[11px] text-slate-700">
+                            <div><strong>보호자:</strong> ${escapeHtml(item.parentName)}</div>
+                            <div><strong>연락처:</strong> ${escapeHtml(item.parentPhone)}</div>
+                            <div><strong>희망일자:</strong> ${item.consultDate ? item.consultDate.replace('2026-', '') : ''}</div>
+                            <div><strong>희망시간:</strong> ${escapeHtml(item.consultTime)}</div>
+                        </div>
+                        <div class="pt-1 border-t border-dashed border-slate-200 text-[10px] text-slate-500 flex justify-between">
+                            <span>담임 확인시간: ____________</span>
+                            <span>서명: _______</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            cardsHtml += `
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = tableHtml + cardsHtml;
+
+            // Apply body class for printing mode
+            document.body.classList.add('is-printing-admin');
+
+            // Trigger window print
+            window.print();
+
+            // Cleanup after print dialog closes
+            setTimeout(() => {
+                document.body.classList.remove('is-printing-admin');
+            }, 500);
+        }
+    </script>
+</body>
+</html>
