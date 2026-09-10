@@ -17,13 +17,13 @@
         import { getFirestore, collection, doc, addDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
         // Firebase 콘솔의 [프로젝트 설정] ➔ [일반] ➔ [내 앱]에서 복사한 키를 붙여넣어 주세요!
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
+        const firebaseConfig = {
+          apiKey: "AIzaSyBbt86cuBmD2DIuY0vWn2coNpqHTvuuIgE",
+          authDomain: "buylnuri.firebaseapp.com",
+          projectId: "buylnuri",
+          storageBucket: "buylnuri.firebasestorage.app",
+          messagingSenderId: "365531635342",
+          appId: "1:365531635342:web:8858e8191f7106bbf333df"
         };
 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'byulnuri-survey';
@@ -129,15 +129,28 @@
             if (window.firebaseStatus.type === "success") {
                 banner.classList.add('bg-emerald-50', 'border-emerald-300', 'text-emerald-800');
                 icon.className = "fa-solid fa-circle-check text-emerald-600 text-base shrink-0";
+                text.innerHTML = `<strong>실시간 클라우드 DB 연동 완료:</strong> 현재 모든 핸드폰 및 PC에서 제출된 내역이 실시간으로 동기화됩니다.`;
             } else if (window.firebaseStatus.type === "local") {
                 banner.classList.add('bg-amber-50', 'border-amber-300', 'text-amber-800');
-                icon.className = "fa-solid fa-triangle-exclamation text-amber-600 text-base shrink-0";
+                icon.className = "fa-solid fa-triangle-exclamation text-amber-600 text-lg shrink-0 mt-0.5";
+                text.innerHTML = `
+                    <strong class="text-amber-900 block text-sm">⚠️ 현재 '로컬 저장 모드'로 작동 중입니다!</strong>
+                    <p class="mt-1 leading-relaxed text-xs">
+                        Firebase 키가 설정되지 않아 데이터가 <strong>제출한 핸드폰 기기에만 개별 저장</strong>되고 있습니다. <br>
+                        <strong>다른 핸드폰/PC와 실시간으로 연동하여 공유받으시려면:</strong> GitHub의 <code class="bg-amber-100 px-1 rounded font-bold">index.html</code> 파일 상단 <code class="bg-amber-100 px-1 rounded font-bold">firebaseConfig</code>에 구글 Firebase에서 발급받은 API Key를 넣어주세요.
+                    </p>
+                `;
             } else {
                 banner.classList.add('bg-red-50', 'border-red-300', 'text-red-800');
-                icon.className = "fa-solid fa-circle-xmark text-red-600 text-base shrink-0";
+                icon.className = "fa-solid fa-circle-xmark text-red-600 text-lg shrink-0 mt-0.5";
+                text.innerHTML = `
+                    <strong class="text-red-900 block text-sm">🚨 Firestore 클라우드 접근 오류!</strong>
+                    <p class="mt-1 leading-relaxed text-xs">
+                        Firebase 연결 중 오류가 발생했습니다: ${window.firebaseStatus.message}<br>
+                        <strong>해결방법:</strong> Firebase 콘솔 ➔ [Firestore Database] ➔ [규칙(Rules)] 탭에서 <code class="bg-red-100 px-1 rounded font-bold">allow read, write: if true;</code> 로 설정 후 [게시] 버튼을 눌러주세요.
+                    </p>
+                `;
             }
-
-            text.textContent = window.firebaseStatus.message;
         };
     </script>
 
@@ -500,11 +513,10 @@
         <section id="tab-teacher-admin" class="hidden space-y-6">
             
             <!-- Firebase Connection Status Diagnostic Banner -->
-            <div id="firebase-status-banner" class="p-4 rounded-xl border text-xs sm:text-sm flex items-start space-x-3 transition-all">
+            <div id="firebase-status-banner" class="p-4 rounded-xl border text-xs sm:text-sm flex items-start space-x-3 transition-all shadow-xs">
                 <i id="firebase-status-icon" class="fa-solid fa-spinner animate-spin text-amber-600 text-base shrink-0 mt-0.5"></i>
-                <div>
-                    <span class="font-bold block mb-0.5">실시간 DB 연동 상태 진단:</span>
-                    <p id="firebase-status-text" class="leading-relaxed">상태 확인 중...</p>
+                <div class="w-full">
+                    <div id="firebase-status-text" class="leading-relaxed">연동 상태 확인 중...</div>
                 </div>
             </div>
 
