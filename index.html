@@ -404,53 +404,34 @@
                     </div>
                 </div>
 
-                <!-- 4. 희망 상담 시간대 -->
+                <!-- 4. 희망 상담 시간대 (3개 시간대) -->
                 <div class="space-y-3 pt-2">
                     <h3 class="text-sm font-bold text-amber-700 flex items-center gap-1.5">
                         <span class="w-5 h-5 bg-amber-500 text-white rounded-full text-xs flex items-center justify-center font-bold">4</span>
                         희망 상담 시간대 <span class="text-red-500">*</span>
                     </h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                         <div>
-                            <input type="radio" name="consultTime" id="time-1" value="4:30~4:45" class="hidden custom-radio" onclick="toggleCustomTimeInput(false)" required>
+                            <input type="radio" name="consultTime" id="time-1" value="4:30~5:00" class="hidden custom-radio" required>
                             <label for="time-1" class="flex items-center justify-between p-3 rounded-xl border border-slate-200 cursor-pointer hover:border-amber-300 transition-all text-sm">
-                                <span>1. 4:30 ~ 4:45</span>
+                                <span>1. 4:30 ~ 5:00</span>
                                 <i class="fa-regular fa-clock text-slate-400"></i>
                             </label>
                         </div>
                         <div>
-                            <input type="radio" name="consultTime" id="time-2" value="4:50~5:05" class="hidden custom-radio" onclick="toggleCustomTimeInput(false)">
+                            <input type="radio" name="consultTime" id="time-2" value="5:00~5:30" class="hidden custom-radio">
                             <label for="time-2" class="flex items-center justify-between p-3 rounded-xl border border-slate-200 cursor-pointer hover:border-amber-300 transition-all text-sm">
-                                <span>2. 4:50 ~ 5:05</span>
+                                <span>2. 5:00 ~ 5:30</span>
                                 <i class="fa-regular fa-clock text-slate-400"></i>
                             </label>
                         </div>
                         <div>
-                            <input type="radio" name="consultTime" id="time-3" value="5:10~5:25" class="hidden custom-radio" onclick="toggleCustomTimeInput(false)">
+                            <input type="radio" name="consultTime" id="time-3" value="5:30~6:00" class="hidden custom-radio">
                             <label for="time-3" class="flex items-center justify-between p-3 rounded-xl border border-slate-200 cursor-pointer hover:border-amber-300 transition-all text-sm">
-                                <span>3. 5:10 ~ 5:25</span>
+                                <span>3. 5:30 ~ 6:00</span>
                                 <i class="fa-regular fa-clock text-slate-400"></i>
                             </label>
                         </div>
-                        <div>
-                            <input type="radio" name="consultTime" id="time-4" value="5:25~5:40" class="hidden custom-radio" onclick="toggleCustomTimeInput(false)">
-                            <label for="time-4" class="flex items-center justify-between p-3 rounded-xl border border-slate-200 cursor-pointer hover:border-amber-300 transition-all text-sm">
-                                <span>4. 5:25 ~ 5:40</span>
-                                <i class="fa-regular fa-clock text-slate-400"></i>
-                            </label>
-                        </div>
-                        <div class="sm:col-span-2">
-                            <input type="radio" name="consultTime" id="time-5" value="그 외 시간" class="hidden custom-radio" onclick="toggleCustomTimeInput(true)">
-                            <label for="time-5" class="flex items-center justify-between p-3 rounded-xl border border-slate-200 cursor-pointer hover:border-amber-300 transition-all text-sm">
-                                <span>5. 그 외 시간 (희망시간 별도 기재)</span>
-                                <i class="fa-regular fa-pen-to-square text-slate-400"></i>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Custom Time Detail -->
-                    <div id="customTimeWrapper" class="hidden mt-2">
-                        <input type="text" id="customTimeDetail" placeholder="원하시는 시간을 자유롭게 적어주세요 (예: 오후 6시 이후)" class="w-full px-3.5 py-2.5 rounded-xl border border-amber-300 bg-amber-50/50 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm">
                     </div>
                 </div>
 
@@ -708,7 +689,7 @@
                 parentPhone: '010-1234-5678',
                 consultDate: '2026-09-28',
                 consultMethod: '방문면담',
-                consultTime: '4:30~4:45',
+                consultTime: '4:30~5:00',
                 opinionHabits: '식욕이 생긴 편. 혼자 잘 안 먹고 떼씀. 잠은 누가 옆에 있어야 잘 자고 예민함.',
                 opinionPeers: '관심이 있는 듯 없는 듯 함.',
                 opinionLanguage: '엄마, 아빠, 맘마, 멍멍 등 단어 위주로 말함.',
@@ -785,18 +766,6 @@
             showToast('관리자 모드가 잠겼습니다.');
         }
 
-        function toggleCustomTimeInput(show) {
-            const wrapper = document.getElementById('customTimeWrapper');
-            const input = document.getElementById('customTimeDetail');
-            if (show) {
-                wrapper.classList.remove('hidden');
-                input.focus();
-            } else {
-                wrapper.classList.add('hidden');
-                input.value = '';
-            }
-        }
-
         async function handleFormSubmit(event) {
             event.preventDefault();
 
@@ -809,7 +778,6 @@
             const dateElem = document.querySelector('input[name="consultDate"]:checked');
             const methodElem = document.querySelector('input[name="consultMethod"]:checked');
             const timeElem = document.querySelector('input[name="consultTime"]:checked');
-            const customDetail = document.getElementById('customTimeDetail').value.trim();
 
             const opinionHabits = document.getElementById('opinionHabits').value.trim();
             const opinionPeers = document.getElementById('opinionPeers').value.trim();
@@ -823,11 +791,6 @@
                 return;
             }
 
-            let timeVal = timeElem.value;
-            if (timeVal === '그 외 시간' && customDetail) {
-                timeVal = `그 외 시간 (${customDetail})`;
-            }
-
             const responseObj = {
                 className,
                 childName,
@@ -836,7 +799,7 @@
                 parentPhone,
                 consultDate: dateElem.value,
                 consultMethod: methodElem.value,
-                consultTime: timeVal,
+                consultTime: timeElem.value,
                 opinionHabits,
                 opinionPeers,
                 opinionLanguage,
@@ -859,7 +822,6 @@
 
                 updateBadgeCount();
                 document.getElementById('surveyForm').reset();
-                toggleCustomTimeInput(false);
             } catch (err) {
                 console.error("Save error:", err);
                 showToast("DB 저장 중 오류 발생: " + err.message, "error");
@@ -952,7 +914,7 @@
             document.getElementById('stat-total-count').textContent = `총 ${filtered.length}건`;
 
             // 1. Render Timetable Grid
-            const timeslots = ['4:30~4:45', '4:50~5:05', '5:10~5:25', '5:25~5:40', '그 외 시간'];
+            const timeslots = ['4:30~5:00', '5:00~5:30', '5:30~6:00'];
             const dates = ['2026-09-28', '2026-09-29', '2026-09-30', '2026-10-01'];
             const gridBody = document.getElementById('timetableGridBody');
             gridBody.innerHTML = '';
@@ -1165,12 +1127,10 @@
                                 희망시간
                             </th>
                             <td class="border border-slate-900 p-2 text-slate-900 align-middle text-xs">
-                                <div class="grid grid-cols-2 gap-x-2 gap-y-1 whitespace-nowrap">
-                                    <span>□ 4:30 ~ 4:45</span>
-                                    <span>□ 4:50 ~ 5:05</span>
-                                    <span>□ 5:10 ~ 5:25</span>
-                                    <span>□ 5:25 ~ 5:40</span>
-                                    <span class="col-span-2">□ 그 외 시간 ( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</span>
+                                <div class="flex items-center justify-around whitespace-nowrap">
+                                    <span>□ 4:30 ~ 5:00</span>
+                                    <span>□ 5:00 ~ 5:30</span>
+                                    <span>□ 5:30 ~ 6:00</span>
                                 </div>
                             </td>
                         </tr>
@@ -1267,46 +1227,51 @@
                 return matchClass && matchDate;
             });
 
-            const timeslots = ['4:30~4:45', '4:50~5:05', '5:10~5:25', '5:25~5:40', '그 외 시간'];
+            const timeslots = ['4:30~5:00', '5:00~5:30', '5:30~6:00'];
             const dates = ['2026-09-28', '2026-09-29', '2026-09-30', '2026-10-01'];
-            const dateLabels = ['9/28 (월)', '9/29 (화)', '9/30 (수)', '10/1 (목)'];
 
             let rowsHTML = '';
             timeslots.forEach(slot => {
-                rowsHTML += `<tr><th class="border-2 border-slate-900 p-2.5 font-bold bg-slate-100 text-center text-slate-900 w-28 align-middle">${slot}</th>`;
+                let rowCells = `<td class="border-2 border-slate-900 p-2 font-bold bg-slate-100 text-center">${slot}</td>`;
+                
                 dates.forEach(d => {
                     const matchedItems = filtered.filter(item => item.consultDate === d && item.consultTime.includes(slot));
-                    let cellContent = '';
+                    let cellText = '';
+                    
                     if (matchedItems.length > 0) {
-                        cellContent = matchedItems.map(m => `
-                            <div class="border border-slate-800 bg-amber-50 p-2 my-1 rounded text-left shadow-xs">
-                                <div class="font-bold text-slate-900 text-xs">${m.childName} <span class="text-[10px] text-slate-600 font-normal">(${m.className.split('(')[0]})</span></div>
-                                <div class="text-[10px] text-slate-800 mt-0.5">• ${m.consultMethod}</div>
-                                <div class="text-[10px] text-slate-600">• ${m.parentName} (${m.parentPhone})</div>
+                        cellText = matchedItems.map(m => `
+                            <div class="p-1 mb-1 bg-slate-50 border border-slate-400 rounded">
+                                <span class="font-black">${m.childName}</span>
+                                <span class="text-[10px]">(${m.className.split('(')[0]})</span>
+                                <div class="text-[10px] text-slate-700">${m.consultMethod} (${m.parentName})</div>
+                                <div class="text-[9px] text-slate-500">${m.parentPhone}</div>
                             </div>
                         `).join('');
                     } else {
-                        cellContent = '<span class="text-slate-400 text-center block my-2">-</span>';
+                        cellText = '<span class="text-slate-300">-</span>';
                     }
-                    rowsHTML += `<td class="border-2 border-slate-900 p-2 align-top text-xs">${cellContent}</td>`;
+
+                    rowCells += `<td class="border-2 border-slate-900 p-2 text-center align-top text-xs">${cellText}</td>`;
                 });
-                rowsHTML += `</tr>`;
+
+                rowsHTML += `<tr>${rowCells}</tr>`;
             });
 
             const scheduleHTML = `
-                <div class="p-6 bg-white space-y-4 font-sans text-slate-900 max-w-4xl mx-auto border-2 border-slate-900 text-left" style="box-sizing: border-box;">
+                <div class="border-2 border-slate-900 p-6 bg-white space-y-4 font-sans text-slate-900 max-w-4xl mx-auto shadow-none text-left">
                     <div class="text-center border-b-2 border-slate-900 pb-3">
-                        <h2 class="text-2xl font-black tracking-widest text-slate-900 uppercase">별누리어린이집 2학기 학부모 상담 예약 현황 시간표</h2>
-                        <p class="text-xs text-slate-700 mt-1.5 font-medium">
-                            필터 기준: <strong class="text-amber-900">${filterClass === 'ALL' ? '전체 학급' : filterClass}</strong> &nbsp;|&nbsp; 총 신청 건수: <strong class="text-amber-900">${filtered.length}건</strong>
-                        </p>
+                        <h2 class="text-2xl font-black tracking-wider text-slate-900">2학기 학부모 상담 예약 현황 시간표</h2>
+                        <p class="text-xs text-slate-600 mt-1 font-bold">[ 별누리어린이집 - 필터: ${filterClass} / ${filterDate} ]</p>
                     </div>
 
-                    <table class="w-full text-xs border-collapse border-2 border-slate-900" style="table-layout: fixed;">
+                    <table class="w-full text-xs border-collapse border-2 border-slate-900">
                         <thead>
                             <tr class="bg-slate-200 text-slate-900 border-b-2 border-slate-900">
-                                <th class="border-2 border-slate-900 p-2.5 font-bold w-28 text-center text-slate-900">시간대</th>
-                                ${dateLabels.map(l => `<th class="border-2 border-slate-900 p-2.5 font-bold text-center text-slate-900">${l}</th>`).join('')}
+                                <th class="border-2 border-slate-900 p-2.5 font-bold text-center w-28">시간대</th>
+                                <th class="border-2 border-slate-900 p-2.5 font-bold text-center">9/28 (월)</th>
+                                <th class="border-2 border-slate-900 p-2.5 font-bold text-center">9/29 (화)</th>
+                                <th class="border-2 border-slate-900 p-2.5 font-bold text-center">9/30 (수)</th>
+                                <th class="border-2 border-slate-900 p-2.5 font-bold text-center">10/1 (목)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1314,13 +1279,8 @@
                         </tbody>
                     </table>
 
-                    <div class="border-2 border-slate-900 p-3 bg-slate-50 space-y-1 mt-4">
-                        <div class="font-bold text-xs text-slate-900">■ 담임교사 체크 및 최종 시간 조율 메모:</div>
-                        <div class="h-20 border border-dashed border-slate-400 bg-white rounded p-2"></div>
-                    </div>
-
-                    <div class="text-center pt-3 border-t border-slate-400">
-                        <p class="font-extrabold text-xs text-amber-900 tracking-wider">사랑받고 사랑을 줄 수 있는 아이 국공립 별누리 어린이집</p>
+                    <div class="pt-4 border-t border-slate-400 text-center">
+                        <p class="font-extrabold text-xs text-amber-900">국공립 별누리 어린이집 (T. 052-282-4342)</p>
                     </div>
                 </div>
             `;
@@ -1333,42 +1293,43 @@
         function printSingleCard(id) {
             const list = getStoredResponses();
             const item = list.find(r => r.id === id);
-            if (!item) return;
+            if (!item) {
+                showToast("해당 제출 내역을 찾을 수 없습니다.", "error");
+                return;
+            }
 
             const printContainer = document.getElementById('printContainer');
             printContainer.innerHTML = generatePaperFormHTML(item);
-
             window.print();
         }
 
         function exportToCSV() {
             const list = getStoredResponses();
             if (list.length === 0) {
-                showToast("저장할 데이터가 없습니다.", "error");
+                showToast('다운로드할 데이터가 없습니다.', 'error');
                 return;
             }
 
             let csvContent = "\uFEFF";
-            csvContent += "반명,원아명,생년월일,보호자성함,연락처,희망상담일자,상담방식,희망상담시간,기본생활습관,또래관계,언어발달,행동특성,상담희망내용,건의사항,제출일시\n";
+            csvContent += "반명,원아명,생년월일,보호자명,연락처,희망날짜,상담방식,희망시간,기본생활습관,또래관계,언어발달,행동특성,상담희망내용,건의사항,제출일시\n";
 
             list.forEach(r => {
-                const clean = (str) => `"${(str || '').replace(/"/g, '""')}"`;
                 const row = [
-                    clean(r.className),
-                    clean(r.childName),
-                    clean(r.childBirth),
-                    clean(r.parentName),
-                    clean(r.parentPhone),
-                    clean(r.consultDate),
-                    clean(r.consultMethod),
-                    clean(r.consultTime),
-                    clean(r.opinionHabits),
-                    clean(r.opinionPeers),
-                    clean(r.opinionLanguage),
-                    clean(r.opinionBehavior),
-                    clean(r.opinionTopics),
-                    clean(r.opinionSuggestions),
-                    clean(r.createdAt)
+                    `"${r.className || ''}"`,
+                    `"${r.childName || ''}"`,
+                    `"${r.childBirth || ''}"`,
+                    `"${r.parentName || ''}"`,
+                    `"${r.parentPhone || ''}"`,
+                    `"${r.consultDate || ''}"`,
+                    `"${r.consultMethod || ''}"`,
+                    `"${r.consultTime || ''}"`,
+                    `"${(r.opinionHabits || '').replace(/"/g, '""')}"`,
+                    `"${(r.opinionPeers || '').replace(/"/g, '""')}"`,
+                    `"${(r.opinionLanguage || '').replace(/"/g, '""')}"`,
+                    `"${(r.opinionBehavior || '').replace(/"/g, '""')}"`,
+                    `"${(r.opinionTopics || '').replace(/"/g, '""')}"`,
+                    `"${(r.opinionSuggestions || '').replace(/"/g, '""')}"`,
+                    `"${r.createdAt || ''}"`
                 ];
                 csvContent += row.join(",") + "\n";
             });
@@ -1377,24 +1338,26 @@
             const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
             link.setAttribute("href", url);
-            link.setAttribute("download", `별누리어린이집_상담사전요구조사_${new Date().toISOString().slice(0,10)}.csv`);
+            link.setAttribute("download", `별누리어린이집_상담수요조사_${new Date().toISOString().slice(0,10)}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+            showToast('엑셀(CSV) 파일로 저장되었습니다.');
         }
 
-        function showToast(message, type = "success") {
+        function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
-            const toastMsg = document.getElementById('toastMessage');
-            const toastIcon = document.getElementById('toastIcon');
+            const icon = document.getElementById('toastIcon');
+            const msgSpan = document.getElementById('toastMessage');
 
-            toastMsg.textContent = message;
-            if (type === "error") {
-                toastIcon.className = "fa-solid fa-circle-exclamation text-red-400 text-base shrink-0";
-            } else if (type === "warning") {
-                toastIcon.className = "fa-solid fa-triangle-exclamation text-amber-400 text-base shrink-0";
+            msgSpan.textContent = message;
+
+            if (type === 'error') {
+                icon.className = "fa-solid fa-circle-xmark text-red-400 text-base shrink-0";
+            } else if (type === 'warning') {
+                icon.className = "fa-solid fa-triangle-exclamation text-amber-400 text-base shrink-0";
             } else {
-                toastIcon.className = "fa-solid fa-circle-check text-emerald-400 text-base shrink-0";
+                icon.className = "fa-solid fa-circle-check text-emerald-400 text-base shrink-0";
             }
 
             toast.classList.remove('translate-y-20', 'opacity-0');
@@ -1403,7 +1366,7 @@
             setTimeout(() => {
                 toast.classList.remove('translate-y-0', 'opacity-100');
                 toast.classList.add('translate-y-20', 'opacity-0');
-            }, 4000);
+            }, 3500);
         }
     </script>
 </body>
