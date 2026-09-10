@@ -197,7 +197,7 @@
                 background: none !important;
                 background-color: white !important;
             }
-            .no-print {
+            header, main, footer, #firebase-status-banner, #authModal, #toast, .no-print {
                 display: none !important;
             }
             .print-only {
@@ -528,8 +528,11 @@
                         <h2 class="text-2xl font-bold text-slate-800 mt-1">상담 수요조사 관리자</h2>
                     </div>
                     <div class="flex flex-wrap items-center gap-2">
-                        <button onclick="printAdminReport()" class="px-3.5 py-2 bg-slate-800 text-white text-xs font-bold rounded-lg hover:bg-slate-700 transition flex items-center gap-1.5 shadow-sm">
-                            <i class="fa-solid fa-print"></i> 사전요구조사서 전체 인쇄
+                        <button onclick="printBlankPaperForm()" class="px-3 py-2 bg-amber-600 text-white text-xs font-bold rounded-lg hover:bg-amber-700 transition flex items-center gap-1.5 shadow-sm">
+                            <i class="fa-solid fa-file-pen"></i> 서면 사전요구조사서 인쇄
+                        </button>
+                        <button onclick="printTimetableSchedule()" class="px-3.5 py-2 bg-slate-800 text-white text-xs font-bold rounded-lg hover:bg-slate-700 transition flex items-center gap-1.5 shadow-sm">
+                            <i class="fa-solid fa-calendar-check"></i> 상담예약 시간표 인쇄
                         </button>
                         <button onclick="exportToCSV()" class="px-3 py-2 bg-emerald-600 text-white text-xs font-bold rounded-lg hover:bg-emerald-700 transition flex items-center gap-1.5">
                             <i class="fa-solid fa-file-excel"></i> 엑셀 저장
@@ -1003,7 +1006,7 @@
 
         function generatePaperFormHTML(item) {
             return `
-                <div class="border-2 border-slate-800 p-6 bg-white space-y-4 page-break font-sans text-slate-900">
+                <div class="border-2 border-slate-800 p-6 bg-white space-y-4 font-sans text-slate-900 max-w-3xl mx-auto">
                     <div class="text-center border-b-2 border-slate-800 pb-3">
                         <h2 class="text-xl font-black tracking-widest uppercase">상담사전요구조사서</h2>
                         <p class="text-[11px] text-slate-600 mt-1">
@@ -1015,13 +1018,13 @@
                     <!-- Top Info Table -->
                     <table class="w-full text-xs border-collapse border-2 border-slate-800 text-left">
                         <tr>
-                            <td class="border border-slate-800 bg-slate-100 p-2 font-bold w-20 text-center">상담일시 및 방법</td>
+                            <td class="border border-slate-800 bg-slate-100 p-2 font-bold w-24 text-center">상담일시 및 방법</td>
                             <td class="border border-slate-800 p-2 leading-relaxed">
                                 <div><strong>희망일자:</strong> ${item.consultDate}</div>
                                 <div><strong>희망시간:</strong> ${item.consultTime}</div>
                                 <div><strong>상담방법:</strong> ${item.consultMethod}</div>
                             </td>
-                            <td class="border border-slate-800 bg-slate-100 p-2 font-bold w-16 text-center">면담 원아</td>
+                            <td class="border border-slate-800 bg-slate-100 p-2 font-bold w-20 text-center">면담 원아</td>
                             <td class="border border-slate-800 p-2 leading-relaxed">
                                 <div><strong>반 명:</strong> ${item.className}</div>
                                 <div><strong>성 명:</strong> <span class="text-sm font-bold">${item.childName}</span></div>
@@ -1071,7 +1074,7 @@
                     <!-- Teacher Notes Box -->
                     <div class="border-2 border-slate-800 p-3 bg-slate-50/50 space-y-1">
                         <div class="font-bold text-xs text-slate-800">■ 담임교사 면담 메모 및 확정 시간:</div>
-                        <div class="h-24 border border-dashed border-slate-400 rounded p-2 text-xs text-slate-400">
+                        <div class="h-20 border border-dashed border-slate-400 rounded p-2 text-xs text-slate-400">
                             (상담 진행 후 상담 내용 및 최종 기록을 수기로 적으실 수 있는 영역입니다.)
                         </div>
                     </div>
@@ -1085,25 +1088,173 @@
             `;
         }
 
-        function printAdminReport() {
-            const list = getStoredResponses();
+        function generateBlankPaperFormHTML() {
+            return `
+                <div class="border-2 border-slate-800 p-6 bg-white space-y-4 font-sans text-slate-900 max-w-3xl mx-auto">
+                    <div class="text-center border-b-2 border-slate-800 pb-3">
+                        <h2 class="text-xl font-black tracking-widest uppercase">상담사전요구조사서</h2>
+                        <p class="text-[11px] text-slate-600 mt-1">
+                            본 ‘부모 상담 사전요구조사 질문지’는 부모 상담 전에 부모님께서 원 생활에 가장 궁금하신 내용을 미리 작성해주시면,<br>
+                            주신 질문지에 중점을 두어 상담이 이루어질 예정이오니 자세하게 기록해 주시기를 부탁드립니다.
+                        </p>
+                    </div>
+
+                    <!-- Top Info Table -->
+                    <table class="w-full text-xs border-collapse border-2 border-slate-800 text-left">
+                        <tr>
+                            <td class="border border-slate-800 bg-slate-100 p-2 font-bold w-24 text-center">상담일시 및 방법</td>
+                            <td class="border border-slate-800 p-2 leading-relaxed">
+                                <div class="font-bold mb-1">상담기간: 2026년 9월 28일 ~ 10월 1일</div>
+                                <div class="flex items-center gap-2 my-1">
+                                    <span>희망시간:</span>
+                                    <span>□ 4:30~4:45</span>
+                                    <span>□ 4:50~5:05</span>
+                                    <span>□ 5:10~5:25</span>
+                                    <span>□ 5:25~5:40</span>
+                                </div>
+                                <div>상담방법: □ 방문면담 &nbsp;&nbsp; □ 전화면담</div>
+                            </td>
+                            <td class="border border-slate-800 bg-slate-100 p-2 font-bold w-20 text-center">면담 원아</td>
+                            <td class="border border-slate-800 p-2 leading-relaxed space-y-1">
+                                <div><strong>반 명:</strong> ______________________</div>
+                                <div><strong>성 명:</strong> ______________________</div>
+                                <div><strong>생년월일:</strong> ___________________</div>
+                                <div><strong>보호자:</strong> ______________________</div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- Parent Opinions 5 Areas Table -->
+                    <div class="space-y-1">
+                        <div class="bg-slate-100 border border-slate-800 p-1.5 text-center font-bold text-xs">
+                            구 분 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 부 모 의 견
+                            <div class="font-normal text-[10px] text-slate-600 mt-0.5">
+                                (가정에서 영아의 기본생활습관·신체운동·언어발달 정도, 행동특성을 적어주시고 궁금하거나 상담을 원하시는 부분을 부모님께서 적어 주세요)
+                            </div>
+                        </div>
+
+                        <table class="w-full text-xs border-collapse border-2 border-slate-800">
+                            <tr>
+                                <td class="border border-slate-800 bg-slate-50 p-2 font-bold w-28 text-center">기본생활습관</td>
+                                <td class="border border-slate-800 p-2 h-20"></td>
+                            </tr>
+                            <tr>
+                                <td class="border border-slate-800 bg-slate-50 p-2 font-bold text-center">또래와의 관계</td>
+                                <td class="border border-slate-800 p-2 h-16"></td>
+                            </tr>
+                            <tr>
+                                <td class="border border-slate-800 bg-slate-50 p-2 font-bold text-center">언어발달</td>
+                                <td class="border border-slate-800 p-2 h-16"></td>
+                            </tr>
+                            <tr>
+                                <td class="border border-slate-800 bg-slate-50 p-2 font-bold text-center">행동특성</td>
+                                <td class="border border-slate-800 p-2 h-20"></td>
+                            </tr>
+                            <tr>
+                                <td class="border border-slate-800 bg-slate-50 p-2 font-bold text-center">상담 받고자 하는 내용</td>
+                                <td class="border border-slate-800 p-2 h-20"></td>
+                            </tr>
+                            <tr>
+                                <td class="border border-slate-800 bg-slate-50 p-2 font-bold text-center">별누리 어린이집 건의사항</td>
+                                <td class="border border-slate-800 p-2 h-16"></td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Teacher Notes Box -->
+                    <div class="border-2 border-slate-800 p-3 bg-slate-50/50 space-y-1">
+                        <div class="font-bold text-xs text-slate-800">■ 담임교사 면담 메모 및 확정 시간:</div>
+                        <div class="h-20 border border-dashed border-slate-400 rounded p-2 text-xs text-slate-400">
+                        </div>
+                    </div>
+
+                    <!-- Footer Stamp / Notice -->
+                    <div class="text-center pt-2 border-t border-slate-300">
+                        <p class="font-bold text-sm text-amber-900 tracking-wider">사랑받고 사랑을 줄 수 있는 아이 국공립 별누리 어린이집</p>
+                        <p class="text-[11px] text-slate-500 mt-0.5">[T. 052-282-4342 / E. b2824342@naver.com]</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function printBlankPaperForm() {
+            const printContainer = document.getElementById('printContainer');
+            printContainer.innerHTML = generateBlankPaperFormHTML();
+            window.print();
+        }
+
+        function printTimetableSchedule() {
+            const responses = getStoredResponses();
             const filterClass = document.getElementById('adminFilterClass').value;
             const filterDate = document.getElementById('adminFilterDate').value;
 
-            let filtered = list.filter(r => {
+            let filtered = responses.filter(r => {
                 const matchClass = filterClass === 'ALL' || r.className === filterClass;
                 const matchDate = filterDate === 'ALL' || r.consultDate === filterDate;
                 return matchClass && matchDate;
             });
 
-            if (filtered.length === 0) {
-                showToast("인쇄할 내역이 없습니다.", "error");
-                return;
-            }
+            const timeslots = ['4:30~4:45', '4:50~5:05', '5:10~5:25', '5:25~5:40', '그 외 시간'];
+            const dates = ['2026-09-28', '2026-09-29', '2026-09-30', '2026-10-01'];
+            const dateLabels = ['9/28 (월)', '9/29 (화)', '9/30 (수)', '10/1 (목)'];
+
+            let rowsHTML = '';
+            timeslots.forEach(slot => {
+                rowsHTML += `<tr><td class="border-2 border-slate-800 p-2 font-bold bg-slate-100 text-center w-28">${slot}</td>`;
+                dates.forEach(d => {
+                    const matchedItems = filtered.filter(item => item.consultDate === d && item.consultTime.includes(slot));
+                    let cellContent = '';
+                    if (matchedItems.length > 0) {
+                        cellContent = matchedItems.map(m => `
+                            <div class="border border-slate-700 bg-amber-50 p-1.5 my-1 rounded text-left">
+                                <div class="font-bold text-slate-900 text-xs">${m.childName} <span class="text-[10px] text-slate-600">(${m.className.split('(')[0]})</span></div>
+                                <div class="text-[10px] text-slate-700">${m.consultMethod} / ${m.parentName} (${m.parentPhone})</div>
+                            </div>
+                        `).join('');
+                    } else {
+                        cellContent = '<span class="text-slate-400 text-center block">-</span>';
+                    }
+                    rowsHTML += `<td class="border-2 border-slate-800 p-2 align-top text-xs">${cellContent}</td>`;
+                });
+                rowsHTML += `</tr>`;
+            });
+
+            const scheduleHTML = `
+                <div class="p-6 bg-white space-y-4 font-sans text-slate-900 max-w-4xl mx-auto">
+                    <div class="text-center border-b-2 border-slate-800 pb-3">
+                        <h2 class="text-2xl font-black tracking-widest uppercase">별누리어린이집 2학기 학부모 상담 예약 현황 시간표</h2>
+                        <p class="text-xs text-slate-600 mt-1.5">
+                            필터 기준: <strong>${filterClass === 'ALL' ? '전체 학급' : filterClass}</strong> | 총 신청 건수: <strong>${filtered.length}건</strong>
+                        </p>
+                    </div>
+
+                    <table class="w-full text-xs border-collapse border-2 border-slate-800">
+                        <thead>
+                            <tr class="bg-slate-200 text-slate-900 border-b-2 border-slate-800">
+                                <th class="border-2 border-slate-800 p-2.5 font-bold w-28 text-center">시간대</th>
+                                ${dateLabels.map(l => `<th class="border-2 border-slate-800 p-2.5 font-bold text-center">${l}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rowsHTML}
+                        </tbody>
+                    </table>
+
+                    <div class="border-2 border-slate-800 p-4 bg-slate-50/50 space-y-2 mt-4">
+                        <div class="font-bold text-xs text-slate-800">■ 담임교사 체크 및 조율 사항:</div>
+                        <div class="h-24 border border-dashed border-slate-300 rounded p-2 text-xs text-slate-400">
+                            (상담 시간 조율 및 확정 사항을 기록하세요)
+                        </div>
+                    </div>
+
+                    <div class="text-center pt-3 border-t border-slate-300">
+                        <p class="font-bold text-xs text-amber-900">사랑받고 사랑을 줄 수 있는 아이 국공립 별누리 어린이집</p>
+                    </div>
+                </div>
+            `;
 
             const printContainer = document.getElementById('printContainer');
-            printContainer.innerHTML = filtered.map(item => generatePaperFormHTML(item)).join('');
-
+            printContainer.innerHTML = scheduleHTML;
             window.print();
         }
 
